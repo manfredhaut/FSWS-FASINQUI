@@ -9,32 +9,34 @@
         /* General Styles */
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f2f5;
             margin: 0;
+            height: 100vh;
+            background: linear-gradient(90deg, #020c2b 0%, #0b508c 100%);
             padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            color: white;
         }
 
         .container {
-            background-color: #fff;
+            background-color: rgba(0, 0, 0, 0.3);
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             width: 100%;
             max-width: 500px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         h1 {
-            color: #333;
+            color: #fff;
             margin-bottom: 20px;
         }
 
         .upload-area {
-            border: 2px dashed #ccc;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
             border-radius: 10px;
             padding: 40px 20px;
             cursor: pointer;
@@ -42,18 +44,18 @@
         }
 
         .upload-area:hover {
-            background-color: #f9f9f9;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .upload-area i {
             font-size: 50px;
-            color: #666;
+            color: #fff;
             margin-bottom: 15px;
         }
 
         .upload-area p {
             margin: 0;
-            color: #666;
+            color: rgba(255, 255, 255, 0.8);
             font-size: 16px;
         }
 
@@ -70,7 +72,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: #f0f2f5;
+            background-color: rgba(0, 0, 0, 0.2);
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
@@ -78,6 +80,7 @@
 
         .file-list-item span {
             font-size: 14px;
+            color: white;
         }
 
         .file-list-item button {
@@ -108,9 +111,12 @@
         /* Back button */
         .back-link {
             display: inline-block;
-            margin-top: 20px;
+            margin-bottom: 20px; /* Adjusted margin */
             text-decoration: none;
-            color: #555;
+            color: #fff;
+            position: absolute;
+            top: 20px;
+            left: 20px;
         }
         .back-link i {
             vertical-align: middle;
@@ -119,8 +125,8 @@
     </style>
 </head>
 <body>
+    <a href="index.html" class="back-link"><i class="ri-arrow-left-line"></i> Voltar</a>
     <div class="container">
-        <a href="index.html" class="back-link"><i class="ri-arrow-left-line"></i> Voltar</a>
         <h1>Importar Planilhas</h1>
         <div class="upload-area" id="uploadArea">
             <input type="file" id="fileInput" multiple>
@@ -141,7 +147,7 @@
 
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
-            uploadArea.style.backgroundColor = '#f9f9f9';
+            uploadArea.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
         });
 
         uploadArea.addEventListener('dragleave', () => {
@@ -183,7 +189,7 @@
         uploadButton.addEventListener('click', () => {
             const filesToUpload = fileList.querySelectorAll('.file-list-item');
             if (filesToUpload.length > 0) {
-                // Aqui você pode adicionar a lógica para enviar os arquivos para o servidor.
+                // Here you can add the logic to send the files to the server.
                 alert(`${filesToUpload.length} arquivo(s) prontos para o envio!`);
             } else {
                 alert('Nenhum arquivo selecionado.');
