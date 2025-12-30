@@ -1,54 +1,61 @@
-# To learn more about how to use Nix to configure your environment
-# see: https://developers.google.com/idx/guides/customize-idx-env
 { pkgs, ... }: {
-  # Which nixpkgs channel to use.
-  channel = "stable-24.05"; # or "unstable"
-  # Use https://search.nixos.org/packages to find packages
+  # Canal Nix para garantir pacotes reproduzíveis.
+  # Recomenda-se usar um canal estável como 'stable-24.05'.
+  channel = "stable-24.05";
+
+  # Pacotes de sistema necessários para o ambiente de desenvolvimento.
   packages = [
-    # pkgs.go
-    # pkgs.python311
-    # pkgs.python311Packages.pip
-    # pkgs.nodejs_20
-    # pkgs.nodePackages.nodemon
+    pkgs.nodejs_20  # Backend Runtime
+    pkgs.docker-compose # Orquestração de contêineres
+    pkgs.postgresql_16 # Pacote de cliente para interagir com o banco de dados
+    pkgs.influxdb # Pacote de cliente para o banco de séries temporais
   ];
-  # Sets environment variables in the workspace
-  env = {};
+
+  # Habilita o daemon do Docker diretamente no workspace do IDX.
+  # Essencial para executar os contêineres de produção localmente.
+  services.docker.enable = true;
+
+  # Hooks do ciclo de vida do workspace.
   idx = {
-    # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
-    extensions = [
-      # "vscodevim.vim"
-      "google.gemini-cli-vscode-ide-companion"
-    ];
-    # Enable previews
+    workspace = {
+      # Comandos a serem executados na criação do workspace.
+      onCreate = {
+        # Instala as dependências do backend
+        backend-npm-install = "cd backend && npm install";
+        # Instala as dependências do frontend
+        frontend-npm-install = "cd frontend && npm install";
+      };
+      # Comandos a serem executados na inicialização do workspace.
+      onStart = {
+        # Sobe os serviços de banco de dados e API em background.
+        # O '--build' garante que as imagens sejam reconstruídas se o Dockerfile mudar.
+        start-services = "docker-compose up -d --build";
+
+        # Inicia o servidor de desenvolvimento do backend em modo de observação.
+        # O '&' no final executa o comando em background.
+        start-backend-dev = "cd backend && npm run dev &";
+      };
+    };
+    
+    # Configura o preview da web para a aplicação frontend.
     previews = {
       enable = true;
       previews = {
-        # web = {
-        #   # Example: run "npm run dev" with PORT set to IDX's defined port for previews,
-        #   # and show it in IDX's web preview panel
-        #   command = ["npm" "run" "dev"];
-        #   manager = "web";
-        #   env = {
-        #     # Environment variables to set for your server
-        #     PORT = "$PORT";
-        #   };
-        # };
+        web = {
+          # O comando inicia o servidor de desenvolvimento do Vite no diretório 'frontend'.
+          # O '$PORT' é uma variável de ambiente fornecida pelo IDX para a porta do preview.
+          # O '--host' garante que o servidor seja acessível de fora do contêiner.
+          command = ["sh" "-c" "cd frontend && npm run dev -- --port $PORT --host"];
+          manager = "web";
+        };
       };
     };
-    # Workspace lifecycle hooks
-    workspace = {
-      # Runs when a workspace is first created
-      onCreate = {
-        # Example: install JS dependencies from NPM
-        # npm-install = "npm install";
-        # Open editors for the following files by default, if they exist:
-        default.openFiles = [ ".idx/dev.nix" "README.md" ];
-      };
-      # Runs when the workspace is (re)started
-      onStart = {
-        # Example: start a background task to watch and re-build backend code
-        # watch-backend = "npm run watch-backend";
-      };
-    };
+
+    # Extensões do VS Code para melhorar a produtividade.
+    extensions = [
+      "dbaeumer.vscode-eslint"
+      "esbenp.prettier-vscode"
+      "ms-azuretools.vscode-docker"
+    ];
   };
 }
