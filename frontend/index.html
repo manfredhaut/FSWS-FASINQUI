@@ -1,1 +1,476 @@
-<!DOCTYPE html> <html lang="pt-BR"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>FASINQUI - Smart Water System</title> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <style> :root { --primary-blue: #004e92; --dark-blue: #000428; --accent-cyan: #3fa9f5; --accent-green: #2ecc71; --text-white: #ffffff; --text-grey: #a0a0a0; --header-bg: #ffffff; } * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; } body { background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; } /* Container Principal (Janela) */ .app-container { width: 100%; max-width: 1200px; background: #fff; box-shadow: 0 20px 50px rgba(0,0,0,0.2); overflow: hidden; border-radius: 8px; } /* --- Header --- */ header { background-color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e0e0e0; } .header-left h1 { color: #002b5c; font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px; } .header-left span { display: block; color: #777; font-size: 0.7rem; margin-top: 2px; font-weight: 500; } .header-right { display: flex; align-items: center; gap: 20px; } .status-badge { display: flex; align-items: center; background: #f4f4f4; padding: 6px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; color: #333; } .status-dot { width: 8px; height: 8px; background-color: var(--accent-green); border-radius: 50%; margin-right: 8px; box-shadow: 0 0 5px var(--accent-green); } .header-icons i { font-size: 1.2rem; color: #002b5c; cursor: pointer; margin-left: 15px; transition: color 0.3s; } .header-icons i:hover { color: var(--accent-cyan); } /* --- Hero Section --- */ .hero-section { /* Fundo azul complexo com gradiente radial simulando a iluminação */ background: radial-gradient(circle at 80% 50%, #005c97 0%, #002b5c 40%, #000428 100%); position: relative; padding: 60px 50px; min-height: 500px; color: white; display: flex; align-items: center; justify-content: space-between; overflow: hidden; } /* Textura de fundo sutil (opcional) */ .hero-section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"); opacity: 0.3; pointer-events: none; } /* Simulação da gota d'água grande no fundo */ .water-drop-bg { position: absolute; right: -50px; top: 50%; transform: translateY(-50%); width: 500px; height: 600px; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; filter: blur(20px); z-index: 1; pointer-events: none; } .content-left { position: relative; z-index: 2; max-width: 50%; } .neural-badge { display: inline-flex; align-items: center; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 0.5px; } .neural-badge i { color: #f1c40f; margin-right: 8px; } .hero-title { font-size: 3rem; line-height: 1.1; font-weight: 700; margin-bottom: 20px; } .hero-title span { color: var(--accent-cyan); display: block; } .hero-desc { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,0.8); max-width: 450px; } /* --- Cards e Lado Direito --- */ .content-right { position: relative; z-index: 2; display: flex; gap: 20px; } .glass-card { background: rgba(0, 20, 50, 0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 25px; width: 180px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: transform 0.3s ease; } .glass-card:hover { transform: translateY(-5px); border-color: rgba(255, 255, 255, 0.3); } .metric-value { font-size: 2.5rem; font-weight: 700; display: block; margin-bottom: 5px; } .val-blue { color: var(--accent-cyan); } .val-green { color: var(--accent-green); } .metric-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; color: rgba(255,255,255,0.9); border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; display: block; } /* Responsividade Básica */ @media (max-width: 768px) { .hero-section { flex-direction: column; padding: 40px 20px; text-align: center; } .content-left { max-width: 100%; margin-bottom: 40px; } .content-right { flex-direction: row; /* Mantém lado a lado no mobile se couber */ justify-content: center; } } </style> </head> <body> <div class="app-container"> <header> <div class="header-left"> <h1>FASINQUI - Smart Water System</h1> <span>SISTEMA INTEGRADO DE ANÁLISE DE ÁGUAS INDUSTRIAIS</span> </div> <div class="header-right"> <div class="status-badge"> <span class="status-dot"></span> CLOUD SYNC ONLINE </div> <div class="header-icons"> <i class="fas fa-bell"></i> <i class="fas fa-search"></i> </div> </div> </header> <main class="hero-section"> <div class="water-drop-bg"></div> <div class="content-left"> <div class="neural-badge"> <i class="fas fa-bolt"></i> Neural Analysis Active </div> <h2 class="hero-title"> FASINQUI – <br> <span>Smart Water System</span> </h2> <p class="hero-desc"> Automação e gestão inteligente de tratamento de águas para Caldeiras e Torres de Resfriamento.<br> Monitoramento contínuo com precisão laboratorial. </p> </div> <div class="content-right"> <div class="glass-card"> <span class="metric-value val-blue">100%</span> <span class="metric-label">Cloud Sync</span> </div> <div class="glass-card"> <span class="metric-value val-green">2.5ms</span> <span class="metric-label">Latency</span> </div> </div> </main> </div> </body> </html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASINQUI - Smart Water System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #004e92;
+            --dark-blue: #000428;
+            --accent-cyan: #3fa9f5;
+            --accent-green: #2ecc71;
+            --text-white: #ffffff;
+            --text-grey: #a0a0a0;
+            --header-bg: #ffffff;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden; /* Prevent body scroll when sidebar is open */
+        }
+        .app-container {
+            width: 100%;
+            max-width: 1200px;
+            background: #fff;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            overflow: hidden;
+            border-radius: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        header {
+            background-color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .header-left {
+            font-size: 1.5rem;
+            color: #002b5c;
+            cursor: pointer;
+        }
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .header-metric {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .header-metric .value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+        }
+        .header-metric .label {
+            font-size: 0.75rem;
+            color: var(--text-grey);
+            font-weight: 500;
+        }
+        .status-badge {
+            display: flex;
+            align-items: center;
+            background: #f4f4f4;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #333;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 5px var(--accent-green);
+        }
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header-icons i {
+            font-size: 1.2rem;
+            color: #002b5c;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .header-icons i:hover {
+            color: var(--accent-cyan);
+        }
+        .hero-section {
+            background: radial-gradient(circle at 80% 50%, #005c97 0%, #002b5c 40%, #000428 100%);
+            position: relative;
+            padding: 60px 50px;
+            min-height: 500px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .water-drop-bg {
+            position: absolute;
+            right: -50px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 500px;
+            height: 600px;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1), transparent);
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            filter: blur(20px);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .content-left {
+            position: relative;
+            z-index: 2;
+            max-width: 50%;
+            text-align: center;
+        }
+        .neural-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .neural-badge i {
+            color: #f1c40f;
+            margin-right: 8px;
+        }
+        .hero-title {
+            font-size: 3rem;
+            line-height: 1.1;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .hero-title span {
+            color: var(--accent-cyan);
+            display: block;
+        }
+        .hero-desc {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.8);
+            max-width: 450px;
+            margin: 0 auto;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 320px;
+            height: 100vh;
+            background-color: #0f1623;
+            color: #ffffff;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: fixed; /* Changed to fixed */
+            top: 0;
+            left: 0;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .sidebar .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            margin-top: 20px;
+        }
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        .logo-text h1 {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            color: white;
+        }
+        .logo-text span {
+            font-size: 11px;
+            color: #3b82f6;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-grow: 1;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #9ca3af;
+            font-size: 15px;
+            font-weight: 500;
+            transition: background 0.2s, color 0.2s;
+            text-decoration: none;
+        }
+        .nav-item i {
+            font-size: 20px;
+        }
+        .nav-item:hover {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .nav-item.active {
+            background-color: #2563eb;
+            color: white;
+            font-weight: 600;
+        }
+        .user-card {
+            background-color: #1a202e;
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            font-size: 18px;
+        }
+        .user-info {
+            flex-grow: 1;
+        }
+        .user-name {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+        }
+        .user-role {
+            display: block;
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+        .logout-btn {
+            color: #9ca3af;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .logout-btn:hover {
+            color: white;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 500;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                flex-direction: column;
+                padding: 40px 20px;
+                text-align: center;
+            }
+            .content-left {
+                max-width: 100%;
+                margin-bottom: 40px;
+            }
+            .header-center {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <button class="close-btn" id="close-btn"><i class="ri-close-line"></i></button>
+
+        <div class="header">
+            <div class="logo-icon">
+                <i class="ri-drop-fill"></i>
+            </div>
+            <div class="logo-text">
+                <h1>FASINQUI</h1>
+                <span>SMART WATER SYSTEM</span>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="/" class="nav-item active">
+                <i class="ri-layout-grid-fill"></i>
+                <span>Helicopter View</span>
+            </a>
+            <a href="/gestao-admin.html" class="nav-item">
+                <i class="ri-settings-3-line"></i>
+                <span>Gestão Administ.</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="ri-flask-line"></i>
+                <span>Laboratório (Entrada)</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="ri-clipboard-line"></i>
+                <span>Operacional (Campo)</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="ri-line-chart-line"></i>
+                <span>Inteligência IA</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="ri-file-list-3-line"></i>
+                <span>Comercial (Surveys)</span>
+            </a>
+            <a href="importar-planilhas.html" class="nav-item">
+                <i class="ri-upload-cloud-2-line"></i>
+                <span>Importar Planilhas</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="ri-server-line"></i>
+                <span>Infraestrutura</span>
+            </a>
+        </nav>
+
+        <div class="user-card">
+            <div class="avatar">A</div>
+            <div class="user-info">
+                <span class="user-name">Admin FASINQUI</span>
+                <span class="user-role">ADMINISTRADOR</span>
+            </div>
+            <div class="logout-btn">
+                <i class="ri-logout-box-r-line"></i>
+            </div>
+        </div>
+    </div>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="app-container">
+        <header>
+            <div class="header-left">
+                <i class="fas fa-bars" id="menu-toggle"></i>
+            </div>
+            <div class="header-center">
+                <div class="header-metric">
+                    <span class="value val-blue">100%</span>
+                    <span class="label">Cloud Sync</span>
+                </div>
+                <div class="header-metric">
+                    <span class="value val-green">2.5ms</span>
+                    <span class="label">Latency</span>
+                </div>
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    CLOUD SYNC ONLINE
+                </div>
+            </div>
+            <div class="header-icons">
+                <i class="fas fa-bell"></i>
+                <i class="fas fa-search"></i>
+            </div>
+        </header>
+        <main class="hero-section">
+            <div class="water-drop-bg"></div>
+            <div class="content-left">
+                <div class="neural-badge">
+                    <i class="fas fa-bolt"></i> Neural Analysis Active
+                </div>
+                <h2 class="hero-title">
+                    FASINQUI<br>
+                    <span>Smart Water System</span>
+                </h2>
+                <p class="hero-desc">
+                    SISTEMA INTEGRADO DE ANÁLISE DE ÁGUAS INDUSTRIAIS
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const menuToggle = document.getElementById('menu-toggle');
+        const closeBtn = document.getElementById('close-btn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.add('open');
+            overlay.classList.add('open');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASINQUI - Gestão Administrativa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(90deg, #020c2b 0%, #0b508c 100%);
+            font-family: 'Inter', sans-serif;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            text-align: center;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+        .back-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+        }
+        .toolkit {
+            background-color: rgba(15, 22, 35, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .toolkit:hover {
+            transform: translateY(-5px);
+            background-color: rgba(25, 32, 45, 0.8);
+        }
+        .toolkit i {
+            font-size: 3rem;
+            color: #3fa9f5;
+            margin-bottom: 15px;
+        }
+        .toolkit span {
+            font-size: 0.95rem;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Gestão Administrativa</h1>
+            <a href="/" class="back-link"><i class="ri-arrow-left-line"></i> Voltar</a>
+        </div>
+        <div class="grid">
+            <div class="toolkit">
+                <i class="ri-database-2-line"></i>
+                <span>Cadastro de Equipamentos</span>
+            </div>
+            <div class="toolkit">
+                <i class="ri-ruler-2-line"></i>
+                <span>Cadastro de Parâmetros e Set Points</span>
+            </div>
+            <div class="toolkit">
+                <i class="ri-user-settings-line"></i>
+                <span>Cadastro de Assistentes Técnicos</span>
+            </div>
+            <div class="toolkit">
+                <i class="ri-user-star-line"></i>
+                <span>Cadastro de Vendedores</span>
+            </div>
+            <div class="toolkit">
+                <i class="ri-team-line"></i>
+                <span>Cadastro de Prestadores de Serviços</span>
+            </div>
+            <div class="toolkit">
+                <i class="ri-contacts-book-line"></i>
+                <span>Cadastro de Clientes</span>
+            </div>
+            <div class="toolkit">
+                <i class="ri-flask-line"></i>
+                <span>Cadastro de Produtos de Tratamento</span>
+            </div>
+            <div class="toolkit">
+                <i class="ri-file-chart-line"></i>
+                <span>Cadastro dos Dados de Coleta</span>
+            </div>
+            <div class="toolkit">
+                <i class="ri-briefcase-4-line"></i>
+                <span>Cadastro de Serviços</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

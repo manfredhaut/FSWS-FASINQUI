@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar Planilhas - Fascinuri</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            padding: 40px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .upload-area:hover {
+            background-color: #f9f9f9;
+        }
+
+        .upload-area i {
+            font-size: 50px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .upload-area p {
+            margin: 0;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .upload-area input[type="file"] {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .file-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #f0f2f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .file-list-item span {
+            font-size: 14px;
+        }
+
+        .file-list-item button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .upload-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .upload-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Back button */
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #555;
+        }
+        .back-link i {
+            vertical-align: middle;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link"><i class="ri-arrow-left-line"></i> Voltar</a>
+        <h1>Importar Planilhas</h1>
+        <div class="upload-area" id="uploadArea">
+            <input type="file" id="fileInput" multiple>
+            <i class="ri-upload-cloud-2-line"></i>
+            <p>Arraste e solte os arquivos aqui ou clique para selecionar.</p>
+        </div>
+        <div class="file-list" id="fileList"></div>
+        <button class="upload-btn" id="uploadButton">Enviar Arquivos</button>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const uploadButton = document.getElementById('uploadButton');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = '#f9f9f9';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.backgroundColor = 'transparent';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.backgroundColor = 'transparent';
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        fileInput.addEventListener('change', () => {
+            const files = fileInput.files;
+            handleFiles(files);
+        });
+
+        function handleFiles(files) {
+            for (const file of files) {
+                if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.type === 'application/vnd.ms-excel') {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-list-item';
+                    fileItem.innerHTML = `
+                        <span>${file.name}</span>
+                        <button>&times;</button>
+                    `;
+                    fileList.appendChild(fileItem);
+
+                    fileItem.querySelector('button').addEventListener('click', () => {
+                        fileItem.remove();
+                    });
+                } else {
+                    alert('Por favor, selecione apenas arquivos de planilha (Excel).');
+                }
+            }
+        }
+
+        uploadButton.addEventListener('click', () => {
+            const filesToUpload = fileList.querySelectorAll('.file-list-item');
+            if (filesToUpload.length > 0) {
+                // Aqui você pode adicionar a lógica para enviar os arquivos para o servidor.
+                alert(`${filesToUpload.length} arquivo(s) prontos para o envio!`);
+            } else {
+                alert('Nenhum arquivo selecionado.');
+            }
+        });
+    </script>
+</body>
+</html>

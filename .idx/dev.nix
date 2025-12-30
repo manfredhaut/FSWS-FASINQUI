@@ -56,6 +56,7 @@
       "dbaeumer.vscode-eslint"
       "esbenp.prettier-vscode"
       "ms-azuretools.vscode-docker"
+      "eamodio.gitlens"
     ];
   };
 }
