@@ -1,44 +1,246 @@
-import React, { useState } from 'react';
-import EquipmentValidator from './EquipmentValidator';
-import { useOfflineSync } from './useOfflineSync';
+import { useState, useEffect } from 'react';
 
-function App() {
-  const { isOnline, addVisitToQueue } = useOfflineSync();
-  const [validationPayload, setValidationPayload] = useState(null);
+// Interfaces simplificadas para as "páginas"
+interface PageProps {
+  navigate: (path: string) => void;
+}
 
-  // Equipamento de exemplo para demonstração
-  const exampleEquipment = {
-    qrCodeUuid: '12345-abcde',
-    clientGps: { lat: -23.5505, long: -46.6333 } // São Paulo
-  };
-
-  const handleValidationSuccess = (payload: any) => {
-    console.log('Validation successful! Payload:', payload);
-    setValidationPayload(payload);
-    // Adiciona os dados da visita à fila de sincronização
-    addVisitToQueue({ validation: payload, analysis: { ph: 10.8, sulfite: 55 } });
-  };
-
+// -----------------------------------------------------------------------------
+// PÁGINA: HOME (Login / Entrada)
+// -----------------------------------------------------------------------------
+function HomePage({ navigate }: PageProps) {
   return (
-    <div className="App">
-      <h1>FASINQUI Smart Water System</h1>
-      <p>Network Status: {isOnline ? 'Online' : 'Offline'}</p>
-      <hr />
-      <h2>Equipment Validation</h2>
-      {!validationPayload ? (
-        <EquipmentValidator 
-          selectedEquipment={exampleEquipment} 
-          onValidationSuccess={handleValidationSuccess} 
-        />
-      ) : (
-        <div>
-          <h3>Validation Complete!</h3>
-          <pre>{JSON.stringify(validationPayload, null, 2)}</pre>
-          <p>Visit data has been queued for synchronization.</p>
-        </div>
-      )}
+    <div style={styles.container}>
+      <header style={styles.header}>
+        <h1 style={styles.title}>FASINQUI</h1>
+        <p style={styles.subtitle}>Sistema de Gestão de Qualidade</p>
+      </header>
+      
+      <div style={styles.card}>
+        <h2 style={{ marginBottom: '20px', color: '#fff' }}>Acesso ao Sistema</h2>
+        
+        <button 
+          onClick={() => navigate('/admin-hub')} 
+          style={styles.buttonPrimary}
+        >
+          Entrar como Administrador
+        </button>
+        
+        <div style={{ margin: '15px 0' }}></div>
+        
+        <button 
+          onClick={() => navigate('/laboratorio')} 
+          style={styles.buttonSecondary}
+        >
+          Entrar no Laboratório
+        </button>
+      </div>
     </div>
   );
 }
+
+// -----------------------------------------------------------------------------
+// PÁGINA: ADMIN HUB (Painel de Gestão)
+// -----------------------------------------------------------------------------
+function AdminHub({ navigate }: PageProps) {
+  return (
+    <div style={styles.container}>
+      <button onClick={() => navigate('/')} style={styles.backButton}>
+        ← Voltar
+      </button>
+
+      <header style={styles.header}>
+        <h1 style={styles.title}>Painel de Gestão</h1>
+        <p style={styles.subtitle}>Selecione uma ferramenta administrativa</p>
+      </header>
+
+      <div style={styles.grid}>
+        {/* Card: Cadastro */}
+        <div style={styles.card} onClick={() => window.location.href = '/cadastro-clientes.html'}>
+          <div style={styles.icon}>📝</div>
+          <h3 style={styles.cardTitle}>Novo Cadastro</h3>
+          <p style={styles.cardDesc}>Registrar novo Survey Técnico</p>
+        </div>
+
+        {/* Card: Consulta */}
+        <div style={styles.card} onClick={() => window.location.href = '/consulta-clientes.html'}>
+          <div style={styles.icon}>🔍</div>
+          <h3 style={styles.cardTitle}>Consultar Base</h3>
+          <p style={styles.cardDesc}>Visualizar histórico de clientes</p>
+        </div>
+
+        {/* Card: Importar */}
+        <div style={styles.card} onClick={() => window.location.href = '/importar-planilhas.html'}>
+          <div style={styles.icon}>📊</div>
+          <h3 style={styles.cardTitle}>Importar Dados</h3>
+          <p style={styles.cardDesc}>Carregar planilhas antigas</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// PÁGINA: LABORATÓRIO (Link para página HTML existente)
+// -----------------------------------------------------------------------------
+function LaboratoryRedirect() {
+  useEffect(() => {
+    window.location.href = '/laboratorio-entrada.html';
+  }, []);
+
+  return (
+    <div style={styles.container}>
+      <h2 style={{ color: 'white' }}>Redirecionando para o Laboratório...</h2>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// COMPONENTE PRINCIPAL (Roteamento Simples)
+// -----------------------------------------------------------------------------
+function App() {
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+
+  // Função simples de navegação (SPA simulada)
+  const navigate = (path: string) => {
+    window.history.pushState({}, '', path);
+    setCurrentPath(path);
+  };
+
+  // Escutar o botão "voltar" do navegador
+  useEffect(() => {
+    const onPopState = () => setCurrentPath(window.location.pathname);
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  // Roteador Básico
+  if (currentPath === '/' || currentPath === '/index.html') {
+    return <HomePage navigate={navigate} />;
+  }
+  
+  if (currentPath === '/admin-hub') {
+    return <AdminHub navigate={navigate} />;
+  }
+
+  if (currentPath === '/laboratorio') {
+    return <LaboratoryRedirect />;
+  }
+
+  // Fallback 404
+  return (
+    <div style={styles.container}>
+      <h1 style={{ color: 'white' }}>404 - Página não encontrada</h1>
+      <button onClick={() => navigate('/')} style={styles.buttonPrimary}>
+        Voltar ao Início
+      </button>
+    </div>
+  );
+}
+
+// -----------------------------------------------------------------------------
+// ESTILOS INLINE (Para manter tudo em um arquivo só por enquanto)
+// -----------------------------------------------------------------------------
+const styles: Record<string, React.CSSProperties> = {
+  container: {
+    minHeight: '100vh',
+    background: 'radial-gradient(circle at 50% 0%, #0b3d75 0%, #020c1b 80%)',
+    fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+    color: '#ffffff',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px',
+  },
+  header: {
+    textAlign: 'center',
+    marginBottom: '40px',
+  },
+  title: {
+    fontSize: '2.5rem',
+    fontWeight: 700,
+    background: 'linear-gradient(90deg, #fff, #a3d9ff)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    margin: '0 0 10px 0',
+    textTransform: 'uppercase',
+  },
+  subtitle: {
+    color: '#00d2ff',
+    fontSize: '1.1rem',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+    margin: 0,
+  },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '20px',
+    width: '100%',
+    maxWidth: '900px',
+  },
+  card: {
+    background: 'rgba(2, 12, 27, 0.7)',
+    backdropFilter: 'blur(12px)',
+    border: '1px solid rgba(64, 123, 255, 0.1)',
+    borderRadius: '20px',
+    padding: '30px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
+    cursor: 'pointer',
+    transition: 'transform 0.2s',
+  },
+  cardTitle: {
+    fontSize: '1.3rem',
+    color: '#fff',
+    margin: '15px 0 10px 0',
+  },
+  cardDesc: {
+    color: '#a0aab5',
+    fontSize: '0.9rem',
+    margin: 0,
+  },
+  icon: {
+    fontSize: '3rem',
+    marginBottom: '10px',
+  },
+  buttonPrimary: {
+    padding: '12px 24px',
+    background: '#00d2ff',
+    color: '#020c1b',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    width: '100%',
+    maxWidth: '300px',
+  },
+  buttonSecondary: {
+    padding: '12px 24px',
+    background: 'transparent',
+    color: '#00d2ff',
+    border: '2px solid #00d2ff',
+    borderRadius: '8px',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    width: '100%',
+    maxWidth: '300px',
+  },
+  backButton: {
+    position: 'absolute',
+    top: '20px',
+    left: '20px',
+    background: 'transparent',
+    border: 'none',
+    color: '#a0aab5',
+    cursor: 'pointer',
+    fontSize: '1rem',
+  }
+};
 
 export default App;

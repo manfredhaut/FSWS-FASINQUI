@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   traefik:
@@ -9,85 +9,88 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=your-email@example.com" # Substitua pelo seu e-mail
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
-      - "80:80"
-      - "443:443"
+      - "8000:80"
       - "8080:8080"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./letsencrypt:/letsencrypt"
+      # CORREÇÃO 1: Socket correto para o Project IDX
+      - "/tmp/docker.sock:/var/run/docker.sock:ro"
     networks:
-      - backend-net
-
-  postgres:
-    image: postgres:16
-    container_name: postgres_db
-    environment:
-      POSTGRES_DB: fasinqui
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password # Em produção, use secrets!
-    volumes:
-      - ./data/postgres:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "5432:5432"
-    networks:
-      - backend-net
-
-  influxdb:
-    image: influxdb:2.7
-    container_name: influxdb_ts
-    environment:
-      DOCKER_INFLUXDB_INIT_MODE: setup
-      DOCKER_INFLUXDB_INIT_USERNAME: admin
-      DOCKER_INFLUXDB_INIT_PASSWORD: password # Em produção, use secrets!
-      DOCKER_INFLUXDB_INIT_ORG: fasinqui
-      DOCKER_INFLUXDB_INIT_BUCKET: sensor_data
-    volumes:
-      - ./data/influxdb:/var/lib/influxdb2
-    ports:
-      - "8086:8086"
-    networks:
-      - backend-net
-
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: backend_api
-    depends_on:
-      - postgres
-      - influxdb
-    environment:
-      DATABASE_URL: "postgresql://user:password@postgres:5432/fasinqui"
-      INFLUXDB_URL: "http://influxdb:8086"
-      INFLUXDB_TOKEN: "your-influx-token" # Substitua pelo seu token
-      INFLUXDB_ORG: "fasinqui"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.fasinqui.localhost`)" # Altere para seu domínio de produção
-      - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls.certresolver=myresolver"
-    networks:
-      - backend-net
+      - app-net
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend_app
+    volumes:
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`fasinqui.localhost`)" # Altere para seu domínio de produção
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
     networks:
-      - backend-net
+      - app-net
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    container_name: backend_api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.services.backend.loadbalancer.server.port=3000"
+      # CORREÇÃO 2: Middleware para o Backend entender a rota
+      - "traefik.http.middlewares.api-strip.stripprefix.prefixes=/api"
+      - "traefik.http.routers.backend.middlewares=api-strip"
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/fasinqui_db?schema=public
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_TOKEN=my-super-secret-auth-token
+      - INFLUXDB_ORG=my-org
+      - INFLUXDB_BUCKET=my-bucket
+    networks:
+      - app-net
+    depends_on:
+      - postgres
+      - influxdb
+
+  postgres:
+    image: postgres:16
+    container_name: postgres_db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=fasinqui_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-net
+
+  influxdb:
+    image: influxdb:2.7
+    container_name: influxdb_ts
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=my-user
+      - DOCKER_INFLUXDB_INIT_PASSWORD=my-super-secret-password
+      - DOCKER_INFLUXDB_INIT_ORG=my-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=my-bucket
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+    networks:
+      - app-net
+
+volumes:
+  postgres_data:
+  influxdb_data:
 
 networks:
-  backend-net:
+  app-net:
     driver: bridge

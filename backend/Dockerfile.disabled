@@ -1,0 +1,40 @@
+# Stage 1: Build o Frontend
+FROM node:20-slim as frontend-builder
+WORKDIR /usr/src/app/frontend
+COPY frontend/package*.json ./
+RUN npm install
+COPY frontend/ .
+RUN npm run build
+
+# Stage 2: Build o Backend
+FROM node:20-slim as backend-builder
+WORKDIR /usr/src/app
+COPY backend/package*.json ./
+RUN npm install --omit=dev
+COPY backend/ .
+RUN npm run build
+
+# Stage 3: Imagem final com NGINX e Supervisor
+FROM nginx:stable-alpine
+
+# Instala Node.js, npm e supervisor
+RUN apk add --no-cache nodejs npm supervisor
+
+# Define o diretório de trabalho para o backend
+WORKDIR /usr/src/app
+
+# Copia o backend buildado (incluindo node_modules) do estágio de backend-builder
+COPY --from=backend-builder /usr/src/app .
+
+# Copia o frontend buildado para o diretório de serviço do NGINX
+COPY --from=frontend-builder /usr/src/app/frontend/dist /usr/share/nginx/html
+
+# Copia os arquivos de configuração do NGINX e do Supervisor
+COPY backend/nginx.conf /etc/nginx/conf.d/default.conf
+COPY backend/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Expõe a porta 9000, que o NGINX está escutando
+EXPOSE 9000
+
+# Inicia o supervisor, que gerencia os processos do NGINX e do Fastify
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

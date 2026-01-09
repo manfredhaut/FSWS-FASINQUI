@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASINQUI - Cadastro Survey Técnico</title>
+    <style>
+        :root {
+            --bg-dark: #020c1b;
+            --glass-bg: rgba(2, 12, 27, 0.7);
+            --glass-border: rgba(64, 123, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #a0aab5;
+            --accent-cyan: #00d2ff;
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --input-border: #1e3a5f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at 50% 0%, #0b3d75 0%, #020c1b 80%);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-primary);
+            padding: 40px 20px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { 
+            font-size: 2.5rem; 
+            font-weight: 700; 
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, #a3d9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        .header .subtitle {
+            color: var(--accent-cyan);
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* Card */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* Tipografia e Layout */
+        .form-section { margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 30px; }
+        .form-section:last-child { border-bottom: none; }
+        
+        .section-header { display: flex; align-items: center; margin-bottom: 25px; }
+        .section-header h2 { font-size: 1.2rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1px; margin: 0; padding-right: 15px; }
+        .section-line { flex-grow: 1; height: 1px; background: linear-gradient(90deg, var(--accent-cyan) 0%, transparent 100%); opacity: 0.5; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        
+        /* Inputs */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; }
+        
+        input[type="text"], input[type="number"], input[type="email"], input[type="tel"], input[type="date"], select, textarea {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 210, 255, 0.1); background: rgba(255, 255, 255, 0.1); }
+        textarea { resize: vertical; min-height: 80px; }
+
+        .input-wrapper { position: relative; }
+        .input-wrapper span { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); font-size: 0.85rem; pointer-events: none; }
+
+        /* Checkboxes/Radios */
+        .options-group { display: flex; gap: 15px; flex-wrap: wrap; padding-top: 5px; }
+        .custom-check { display: flex; align-items: center; cursor: pointer; font-size: 0.9rem; color: var(--text-primary); }
+        .custom-check input { appearance: none; width: 18px; height: 18px; border: 2px solid var(--text-secondary); border-radius: 4px; margin-right: 8px; position: relative; background: transparent; cursor: pointer; }
+        .custom-check input:checked { border-color: var(--accent-cyan); background: rgba(0, 210, 255, 0.2); }
+        .custom-check input:checked::after { content: ''; position: absolute; top: 2px; left: 5px; width: 4px; height: 8px; border: solid var(--accent-cyan); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+        .custom-check input[type="radio"] { border-radius: 50%; }
+
+        /* Sub-labels */
+        .sub-label { display: block; font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 10px; font-weight: 700; margin-top: 15px; letter-spacing: 0.5px; border-left: 3px solid var(--accent-cyan); padding-left: 10px; }
+
+        /* Buttons */
+        .actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 40px; }
+        .btn { padding: 12px 30px; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; border: none; }
+        .btn-primary { background: linear-gradient(135deg, #0066cc 0%, #003366 100%); color: white; box-shadow: 0 4px 15px rgba(0, 102, 204, 0.3); }
+        .btn-primary:hover { background: linear-gradient(135deg, #0077ee 0%, #004488 100%); transform: translateY(-2px); }
+        .btn-secondary { background: transparent; border: 1px solid var(--input-border); color: var(--text-secondary); }
+        .btn-secondary:hover { border-color: white; color: white; }
+
+        /* TOOLKIT SELECTOR STYLES */
+        .toolkit-selector {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 40px;
+            text-align: center;
+            border: 1px dashed var(--glass-border);
+        }
+        .toolkit-title {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+        .toolkit-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        .type-btn {
+            background: transparent;
+            border: 2px solid var(--input-border);
+            color: var(--text-secondary);
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            width: 100%;
+            max-width: 300px;
+        }
+        .type-btn:hover {
+            border-color: var(--accent-cyan);
+            color: white;
+        }
+        .type-btn.active {
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: #020c1b;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+        }
+
+        /* Utility */
+        .hidden { display: none; }
+
+        @media (max-width: 768px) { 
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } 
+            .actions { flex-direction: column; } 
+            .btn, .type-btn { width: 100%; } 
+            .toolkit-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>FASINQUI</h1>
+        <div class="subtitle">Smart Water System - Survey Técnico</div>
+    </div>
+
+    <div class="glass-card">
+        <form id="surveyForm">
+            
+            <div class="form-section">
+                <div class="section-header">
+                    <h2>Dados Corporativos</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>EMPRESA</label>
+                        <input type="text" id="empresa" name="nome_empresa" required placeholder="Razão Social">
+                    </div>
+                    <div class="form-group">
+                        <label>CNPJ</label>
+                        <input type="text" id="cnpj" name="cnpj" required placeholder="00.000.000/0000-00">
+                    </div>
+                    <div class="form-group">
+                        <label>CIDADE / UF</label>
+                        <input type="text" id="cidade" name="cidade">
+                    </div>
+                    <div class="form-group">
+                        <label>CONTATO RESPONSÁVEL</label>
+                        <input type="text" id="contato" name="contato" required>
+                    </div>
+                    <div class="form-group">
+                        <label>EMAIL</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>TELEFONE</label>
+                        <input type="tel" id="telefone" name="telefone">
+                    </div>
+                    <div class="form-group">
+                        <label>RAMO DA ATIVIDADE</label>
+                        <input type="text" id="ramo" name="ramo">
+                    </div>
+                    <div class="form-group">
+                        <label>PRODUÇÃO</label>
+                        <input type="text" id="producao" name="producao">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>TIPO DE PROPOSTA</label>
+                    <div class="options-group">
+                        <label class="custom-check"><input type="checkbox" name="proposta" value="Tratamento"> Tratamento Químico</label>
+                        <label class="custom-check"><input type="checkbox" name="proposta" value="Limpeza"> Limpeza Técnica</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolkit-selector">
+                <div class="toolkit-title">Selecione o Sistema para Cadastro</div>
+                <div class="toolkit-buttons">
+                    <button type="button" class="type-btn" id="btn-vapor" onclick="toggleSection('vapor')">Gerador de Vapor</button>
+                    <button type="button" class="type-btn" id="btn-resfriamento" onclick="toggleSection('resfriamento')">Sistema de Resfriamento</button>
+                </div>
+            </div>
+
+            <div id="section-vapor" class="hidden">
+                <div class="form-section">
+                    <div class="section-header">
+                        <h2>Sistema Gerador de Vapor</h2>
+                        <div class="section-line"></div>
+                    </div>
+                    
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>FABRICANTE</label>
+                            <input type="text" id="fab_cald" name="fab_cald">
+                        </div>
+                        <div class="form-group">
+                            <label>TIPO DE CALDEIRA</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="estado_cald" value="Nova"> Nova</label>
+                                <label class="custom-check"><input type="radio" name="estado_cald" value="Usada"> Usada</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>QUEM FORNECE O ATUAL TRATAMENTO?</label>
+                            <input type="text" id="fornec_cald" name="fornec_cald">
+                        </div>
+                    </div>
+
+                    <div class="grid-4">
+                        <div class="form-group">
+                            <label>PRODUÇÃO PROJETO</label>
+                            <div class="input-wrapper"><input type="number" id="prod_proj_cald" name="prod_proj_cald" step="0.01"><span>ton/h</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label>PRODUÇÃO REAL</label>
+                            <div class="input-wrapper"><input type="number" id="prod_real_cald" name="prod_real_cald" step="0.01"><span>ton/h</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label>MEDIÇÃO PRODUÇÃO VAPOR</label>
+                            <input type="text" id="medicao_vapor" name="medicao_vapor">
+                        </div>
+                        <div class="form-group"></div>
+                        <div class="form-group">
+                            <label>PRESSÃO DE TRABALHO PROJETO</label>
+                            <div class="input-wrapper"><input type="number" id="press_proj_cald" name="press_proj_cald" step="0.01"><span>kgf/cm²</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label>PRESSÃO DE TRABALHO REAL</label>
+                            <div class="input-wrapper"><input type="number" id="press_real_cald" name="press_real_cald" step="0.01"><span>kgf/cm²</span></div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>FONTE DE REPOSIÇÃO</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="checkbox" name="repo_cald" value="Poco"> Poço</label>
+                                <label class="custom-check"><input type="checkbox" name="repo_cald" value="Rio"> Rio</label>
+                                <label class="custom-check"><input type="checkbox" name="repo_cald" value="Lago"> Lago</label>
+                                <label class="custom-check"><input type="checkbox" name="repo_cald" value="ETA"> ETA</label>
+                                <label class="custom-check"><input type="checkbox" name="repo_cald" value="Outro"> Outro</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>PRÉ-TRATAMENTO</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="checkbox" name="pre_cald" value="Abrandador"> Abrand.</label>
+                                <label class="custom-check"><input type="checkbox" name="pre_cald" value="Osmose"> Osmose</label>
+                                <label class="custom-check"><input type="checkbox" name="pre_cald" value="Desmi"> Desmi.</label>
+                                <label class="custom-check"><input type="checkbox" name="pre_cald" value="Filtro"> Filtro</label>
+                                <label class="custom-check"><input type="checkbox" name="pre_cald" value="Nenhum"> Nenhum</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-4">
+                        <div class="form-group">
+                            <label>RETORNO DE CONDENSADO</label>
+                            <div class="input-wrapper" style="margin-bottom: 5px;">
+                                <input type="number" id="retorno_pct" name="retorno_pct" placeholder="0">
+                                <span>%</span>
+                            </div>
+                            <span class="sub-label" style="border:none; padding:0; margin-top:10px;">DIRETO ?</span>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="retorno_direto" value="Sim"> Sim</label>
+                                <label class="custom-check"><input type="radio" name="retorno_direto" value="Nao"> Não</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>DESAERADOR?</label>
+                            <div class="options-group" style="margin-top: 25px;">
+                                <label class="custom-check"><input type="radio" name="desaerador" value="Sim"> Sim</label>
+                                <label class="custom-check"><input type="radio" name="desaerador" value="Nao"> Não</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>ECONOMIZADOR?</label>
+                            <div class="options-group" style="margin-top: 25px;">
+                                <label class="custom-check"><input type="radio" name="economizador" value="Sim"> Sim</label>
+                                <label class="custom-check"><input type="radio" name="economizador" value="Nao"> Não</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>TEMPERATURA DE ÁGUA DE ALIMENTAÇÃO</label>
+                            <div class="input-wrapper"><input type="number" id="temp_alim" name="temp_alim" step="0.1"><span>°C</span></div>
+                        </div>
+                    </div>
+
+                    <div class="grid-4">
+                        <div class="form-group">
+                            <label>DOSAGEM</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="checkbox" name="dosagem" value="Linha"> Linha</label>
+                                <label class="custom-check"><input type="checkbox" name="dosagem" value="TA"> T.A.</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>MONITORA/REGISTRA TEMP. ALIM.</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="monitora_temp" value="Sim"> Sim</label>
+                                <label class="custom-check"><input type="radio" name="monitora_temp" value="Nao"> Não</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>TIPO DE PURGA</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="checkbox" name="tipo_purga" value="Continua"> Contínua</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_purga" value="Fundo"> Fundo</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_purga" value="Manual"> Manual</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_purga" value="Automatica"> Automática</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>ALIMENTAÇÃO</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="alimentacao" value="Continua"> Contínua</label>
+                                <label class="custom-check"><input type="radio" name="alimentacao" value="Intermitente"> Intermitente</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-4">
+                        <div class="form-group">
+                            <label>DIÂMETRO DAS DESCARGAS</label>
+                            <input type="text" id="diametro_desc" name="diametro_desc">
+                        </div>
+                        <div class="form-group">
+                            <label>QUANTIDADE DE DESCARGAS</label>
+                            <input type="number" id="qtd_desc" name="qtd_desc">
+                        </div>
+                        <div class="form-group">
+                            <label>HIDRÔMETRO</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="checkbox" name="hidrometro" value="Alimentacao"> Alimentação</label>
+                                <label class="custom-check"><input type="checkbox" name="hidrometro" value="Reposicao"> Reposição</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>REGIME DE OPERAÇÃO (Horas)</label>
+                            <div class="input-wrapper"><input type="number" id="regime_hora" name="regime_hora" step="0.1"><span>h/dia</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label>REGIME DE OPERAÇÃO (Dias)</label>
+                            <div class="input-wrapper"><input type="number" id="regime_dia" name="regime_dia"><span>dia/mês</span></div>
+                        </div>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>TIPO DE COMBUSTÍVEL</label>
+                            <input type="text" id="combustivel" name="combustivel">
+                        </div>
+                        <div class="form-group">
+                            <label>UMIDADE COMBUSTÍVEL</label>
+                            <div class="input-wrapper"><input type="number" id="umidade_comb" name="umidade_comb" step="0.1"><span>%</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label>CONSUMO DO COMBUSTÍVEL</label>
+                            <div class="input-wrapper"><input type="number" id="consumo_comb" name="consumo_comb" step="0.01"><span>qtdd/mês</span></div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>UNIDADE CONSUMO COMBUSTÍVEL</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="unid_comb" value="mst"> mst</label>
+                                <label class="custom-check"><input type="radio" name="unid_comb" value="m3"> m³</label>
+                                <label class="custom-check"><input type="radio" name="unid_comb" value="ton"> ton</label>
+                                <label class="custom-check"><input type="radio" name="unid_comb" value="Nm3"> Nm³</label>
+                                <label class="custom-check"><input type="radio" name="unid_comb" value="Litros"> Litros</label>
+                                <label class="custom-check"><input type="radio" name="unid_comb" value="Outro"> Outro</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>USA VAPOR DIRETO NO PROCESSO?</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="vapor_direto" value="Sim"> Sim</label>
+                                <label class="custom-check"><input type="radio" name="vapor_direto" value="Nao"> Não</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>DATA DA ÚLTIMA INSPEÇÃO + RELATÓRIO</label>
+                            <input type="date" id="data_inspecao" name="data_inspecao">
+                        </div>
+                        <div class="form-group">
+                            <label>VOLUME ESTÁTICO (LAVAGEM QUÍMICA)</label>
+                            <div class="input-wrapper"><input type="number" id="vol_estatico_cald" name="vol_estatico_cald" step="0.01"><span>m³</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>OBSERVAÇÕES EXTRAS (VAPOR):</label>
+                        <textarea id="obs_extras_vapor" name="obs_extras_vapor" placeholder="Observações específicas do gerador de vapor..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-resfriamento" class="hidden">
+                <div class="form-section">
+                    <div class="section-header">
+                        <h2>Sistema de Resfriamento</h2>
+                        <div class="section-line"></div>
+                    </div>
+
+                    <div class="grid-4">
+                        <div class="form-group">
+                            <label>RAMO DE ATIVIDADE</label>
+                            <input type="text" id="ramo_resf" name="ramo_resf">
+                        </div>
+                        <div class="form-group">
+                            <label>QUANTIDADE DE PRODUÇÃO POR DIA</label>
+                            <input type="text" id="qtd_producao" name="qtd_producao" placeholder="Quantidade">
+                        </div>
+                        <div class="form-group">
+                            <label>TEMPO DE PRODUÇÃO</label>
+                            <input type="text" id="tempo_producao" name="tempo_producao" placeholder="Tempo">
+                        </div>
+                        <div class="form-group">
+                            <label>IDENTIFICAÇÃO / TAG</label>
+                            <input type="text" id="tag_resf" name="tag_resf">
+                        </div>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>FABRICANTE</label>
+                            <input type="text" id="fab_resf" name="fab_resf">
+                        </div>
+                        <div class="form-group">
+                            <label>TIPO CONSTRUTIVO</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="tipo_const" value="Torre"> Torre</label>
+                                <label class="custom-check"><input type="radio" name="tipo_const" value="Condensador"> Condensador</label>
+                                <label class="custom-check"><input type="radio" name="tipo_const" value="Outro"> Outro</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>ESTADO DO EQUIPAMENTO</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="estado_equip" value="Nova"> Nova</label>
+                                <label class="custom-check"><input type="radio" name="estado_equip" value="Usada"> Usada</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>QUEM FORNECE O ATUAL TRATAMENTO?</label>
+                            <input type="text" id="fornec_tratamento" name="fornec_tratamento">
+                        </div>
+                        <div class="form-group">
+                            <label>CARGA TÉRMICA NOMINAL</label>
+                            <div class="input-wrapper"><input type="number" id="carga_termica_nom" name="carga_termica_nom" step="0.01"><span>Mkcal/h</span></div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>TIPO DE REPOSIÇÃO</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="checkbox" name="tipo_repo" value="Poco"> Poço</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_repo" value="Rio"> Rio</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_repo" value="Lago"> Lago</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_repo" value="ETA"> ETA</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_repo" value="Outro"> Outro</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>PRÉ TRATAMENTO (CLARIFICAÇÃO)</label>
+                            <div class="grid-2" style="grid-template-columns: auto 1fr; gap: 10px;">
+                                <div class="options-group">
+                                    <label class="custom-check"><input type="radio" name="pre_trat" value="Sim"> Sim</label>
+                                    <label class="custom-check"><input type="radio" name="pre_trat" value="Nao"> Não</label>
+                                </div>
+                                <input type="text" id="pre_trat_qual" name="pre_trat_qual" placeholder="Qual?">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>HIDRÔMETRO NA REPOSIÇÃO</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="hidro_repo" value="Sim"> Sim</label>
+                                <label class="custom-check"><input type="radio" name="hidro_repo" value="Nao"> Não</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>TIPOS DE TROCADORES</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="checkbox" name="tipo_troc" value="CascoTubo"> Casco tubo</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_troc" value="Camisa"> Camisa</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_troc" value="Serpentina"> Serpentina</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_troc" value="Outro"> Outro</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>TIPO DE RECHEIO</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="checkbox" name="tipo_recheio" value="Respingo"> Respingo</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_recheio" value="Filme"> Filme</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_recheio" value="Colmeia"> Colmeia</label>
+                                <label class="custom-check"><input type="checkbox" name="tipo_recheio" value="Outro"> Outro</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>METAIS NO CIRCUITO</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="checkbox" name="metais" value="AcoCarbono"> Aço carbono</label>
+                                <label class="custom-check"><input type="checkbox" name="metais" value="Inox"> Inox 304/316</label>
+                                <label class="custom-check"><input type="checkbox" name="metais" value="Cobre"> Cobre</label>
+                                <label class="custom-check"><input type="checkbox" name="metais" value="Galvanizado"> Galvanizado</label>
+                                <label class="custom-check"><input type="checkbox" name="metais" value="Ligas"> Ligas</label>
+                                <label class="custom-check"><input type="checkbox" name="metais" value="Outro"> Outro</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>VAZÃO DE RECIRCULAÇÃO</label>
+                            <div class="input-wrapper"><input type="number" id="vazao_recirc" name="vazao_recirc" step="0.1"><span>m³/h</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label>VOLUME ÁGUA DAS BACIAS</label>
+                            <div class="input-wrapper"><input type="number" id="vol_bacias" name="vol_bacias" step="0.1"><span>m³</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label>VOLUME TOTAL DO SISTEMA</label>
+                            <div class="input-wrapper"><input type="number" id="vol_total" name="vol_total" step="0.1"><span>m³</span></div>
+                        </div>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>TEMP. ÁGUA QUENTE (RETORNO)</label>
+                            <div class="input-wrapper"><input type="number" id="temp_quente" name="temp_quente" step="0.1"><span>°C</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label>TEMP. ÁGUA FRIA (BACIA)</label>
+                            <div class="input-wrapper"><input type="number" id="temp_fria" name="temp_fria" step="0.1"><span>°C</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label>TEMPERATURA DE BULBO ÚMIDO (SE CONDENSADOR)</label>
+                            <div class="input-wrapper"><input type="number" id="temp_bulbo" name="temp_bulbo" step="0.1"><span>°C</span></div>
+                        </div>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>MONITORA/REGISTRA TEMPERATURA</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="monitora_temp_resf" value="Sim"> Sim</label>
+                                <label class="custom-check"><input type="radio" name="monitora_temp_resf" value="Nao"> Não</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>TIPO DE PURGA</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="purga_resf" value="Continua"> Contínua</label>
+                                <label class="custom-check"><input type="radio" name="purga_resf" value="Intermitente"> Intermitente</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Nº CÉLULAS/BACIAS INTERLIGADAS</label>
+                            <input type="number" id="num_celulas" name="num_celulas">
+                        </div>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>TIRAGEM</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="tiragem" value="Forcada"> Forçada</label>
+                                <label class="custom-check"><input type="radio" name="tiragem" value="Induzida"> Induzida</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>REGIME DE OPERAÇÃO (h/dia)</label>
+                            <div class="input-wrapper"><input type="number" id="regime_resf_hora" name="regime_resf_hora" step="0.1"><span>h/dia</span></div>
+                        </div>
+                        <div class="form-group">
+                            <label>REGIME DE OPERAÇÃO (dia/mês)</label>
+                            <div class="input-wrapper"><input type="number" id="regime_resf_dia" name="regime_resf_dia"><span>dia/mês</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>GERAÇÃO DE ENERGIA (CONDENSADOR)</label>
+                            <div class="options-group">
+                                <label class="custom-check"><input type="radio" name="geracao_energia" value="Sim"> Sim</label>
+                                <label class="custom-check"><input type="radio" name="geracao_energia" value="Nao"> Não</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>DATA DA ÚLTIMA INSPEÇÃO</label>
+                            <input type="date" id="data_inspecao_resf" name="data_inspecao_resf">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>OBSERVAÇÕES EXTRAS (RESFRIAMENTO):</label>
+                        <textarea id="obs_extras_resf" name="obs_extras_resf" placeholder="Observações específicas do sistema de resfriamento..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-header">
+                    <h2>Observações Gerais</h2>
+                    <div class="section-line"></div>
+                </div>
+                <div class="form-group">
+                    <label>OBSERVAÇÕES EXTRAS GERAIS</label>
+                    <textarea id="obs_extras" name="obs_extras" placeholder="Digite aqui informações adicionais importantes..."></textarea>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="reset" class="btn btn-secondary">Limpar</button>
+                <button type="submit" class="btn btn-primary">GRAVAR DADOS</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleSection(type) {
+        const vaporSection = document.getElementById('section-vapor');
+        const resfSection = document.getElementById('section-resfriamento');
+        const vaporBtn = document.getElementById('btn-vapor');
+        const resfBtn = document.getElementById('btn-resfriamento');
+
+        if (type === 'vapor') {
+            vaporSection.classList.remove('hidden');
+            resfSection.classList.add('hidden');
+            vaporBtn.classList.add('active');
+            resfBtn.classList.remove('active');
+        } else if (type === 'resfriamento') {
+            resfSection.classList.remove('hidden');
+            vaporSection.classList.add('hidden');
+            resfBtn.classList.add('active');
+            vaporBtn.classList.remove('active');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('surveyForm');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Lógica para detectar se estamos no Project IDX
+            const currentPort = window.location.port;
+            const hostname = window.location.hostname;
+            const protocol = window.location.protocol;
+            
+            let backendUrl = "http://localhost:8080/api/survey"; // Padrão local
+
+            if (hostname.includes("cloudworkstations.dev")) {
+                const backendHostname = hostname.replace("9000-", "8080-");
+                backendUrl = `${protocol}//${backendHostname}/api/survey`;
+            }
+
+            console.log("Tentando enviar para API em:", backendUrl);
+            
+            const formData = new FormData(form);
+            const dataObj = Object.fromEntries(formData.entries());
+
+            // Tratamento especial para Checkboxes (arrays)
+            const checkboxes = form.querySelectorAll('input[type="checkbox"]:checked');
+            checkboxes.forEach((checkbox) => {
+                if(!dataObj[checkbox.name]) {
+                    // Se ainda não existe, cria array com todos os valores marcados
+                    const values = [];
+                    document.querySelectorAll(`input[name="${checkbox.name}"]:checked`).forEach(c => values.push(c.value));
+                    dataObj[checkbox.name] = values;
+                }
+            });
+
+            try {
+                const response = await fetch(backendUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include', // Necessário para passar pelo proxy do IDX
+                    body: JSON.stringify(dataObj)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(`✅ SUCESSO!\nCadastro Realizado.\nCódigo Único: ${result.codigo_unico || 'N/A'}`);
+                    form.reset();
+                } else {
+                    const errorText = await response.text();
+                    console.error('Erro na resposta:', errorText);
+                    alert(`❌ Falha ao gravar: ${errorText}`);
+                }
+            } catch (error) {
+                console.error('Erro de conexão:', error);
+                alert(`Erro de conexão: ${error.message}. Verifique se o backend (porta 8080) está rodando.`);
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

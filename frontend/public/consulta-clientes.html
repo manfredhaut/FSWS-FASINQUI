@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASINQUI - Consulta de Clientes</title>
+    <style>
+        :root {
+            --bg-dark: #020c1b;
+            --glass-bg: rgba(2, 12, 27, 0.85);
+            --glass-border: rgba(64, 123, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #a0aab5;
+            --accent-cyan: #00d2ff;
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --input-border: #1e3a5f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at 50% 0%, #0b3d75 0%, #020c1b 80%);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-primary);
+            padding: 40px 20px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { 
+            font-size: 2.5rem; 
+            font-weight: 700; 
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, #a3d9ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        
+        /* Card */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        /* Search Input */
+        .search-container {
+            margin-bottom: 25px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        input:focus { outline: none; border-color: var(--accent-cyan); box-shadow: 0 0 10px rgba(0, 210, 255, 0.1); background: rgba(255, 255, 255, 0.1); }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: var(--text-secondary);
+        }
+        
+        th, td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        th {
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        td {
+            font-size: 0.9rem;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+        }
+        
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #ff6b6b;
+        }
+
+        /* Buttons & Actions */
+        .btn-action {
+            background: transparent;
+            border: none;
+            color: var(--accent-cyan);
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-action:hover {
+            color: white;
+            transform: scale(1.2);
+        }
+        .btn-action svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.hidden {
+            display: none;
+            opacity: 0;
+        }
+
+        .modal-window {
+            background: var(--bg-dark); /* Fallback */
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh; /* Limita altura para scroll */
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            color: var(--accent-cyan);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+
+        .close-modal {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-modal:hover { color: #ff6b6b; }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto; /* Scroll apenas no conteúdo */
+        }
+
+        .detail-row {
+            display: flex;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 10px 0;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        
+        .detail-key {
+            width: 40%;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: capitalize;
+        }
+        .detail-value {
+            width: 60%;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            word-break: break-word;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .detail-row { flex-direction: column; }
+            .detail-key { width: 100%; margin-bottom: 4px; color: var(--accent-cyan); }
+            .detail-value { width: 100%; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Consulta de Clientes</h1>
+    </div>
+
+    <div class="glass-card">
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Filtrar por nome da empresa...">
+        </div>
+
+        <div class="table-container">
+            <table id="clientsTable">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Código</th>
+                        <th>Empresa</th>
+                        <th>CNPJ</th>
+                        <th>Cidade</th>
+                        <th>Tipo</th>
+                        <th>Ações</th> <!-- Nova Coluna -->
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="7" class="loading">Carregando dados...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL STRUCTURE -->
+<div id="detailsModal" class="modal-overlay hidden">
+    <div class="modal-window">
+        <div class="modal-header">
+            <h2>Detalhes do Survey</h2>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalContent">
+            <!-- Dynamic Content Here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    let clientsData = [];
+
+    async function fetchSurveys() {
+        const tableBody = document.getElementById('tableBody');
+        
+        const hostname = window.location.hostname;
+        const protocol = window.location.protocol;
+        let backendUrl = "http://localhost:8080/api/surveys";
+
+        if (hostname.includes("cloudworkstations.dev")) {
+            const backendHostname = hostname.replace("9000-", "8080-").replace(/-[0-9]+\.proxy/, "-8080.proxy"); // Adjust helper logic
+            // Fallback simplistic logic if complex replace fails
+            let finalHostname = hostname.replace("9000-", "8080-");
+            backendUrl = `${protocol}//${finalHostname}/api/surveys`;
+        }
+
+        try {
+            const response = await fetch(backendUrl, {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (!response.ok) throw new Error('Falha na resposta da API');
+            
+            clientsData = await response.json();
+            renderTable(clientsData);
+
+        } catch (error) {
+            console.error(error);
+            tableBody.innerHTML = `<tr><td colspan="7" class="error">Erro ao carregar dados: ${error.message}</td></tr>`;
+        }
+    }
+
+    function renderTable(data) {
+        const tableBody = document.getElementById('tableBody');
+        tableBody.innerHTML = '';
+
+        if (data.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="7" class="loading">Nenhum registro encontrado.</td></tr>';
+            return;
+        }
+
+        data.forEach((client, index) => {
+            const row = document.createElement('tr');
+            
+            const date = new Date(client.created_at).toLocaleDateString('pt-BR');
+            const dados = client.dados_tecnicos || {};
+            const cidade = dados.cidade || '-';
+            
+            let tipo = '-';
+            if (dados.proposta) {
+                tipo = Array.isArray(dados.proposta) ? dados.proposta.join(', ') : dados.proposta;
+            }
+
+            row.innerHTML = `
+                <td>${date}</td>
+                <td>${client.codigo_unico}</td>
+                <td>${client.nome_empresa}</td>
+                <td>${client.cnpj}</td>
+                <td>${cidade}</td>
+                <td>${tipo}</td>
+                <td>
+                    <button class="btn-action" onclick="openModal(${index})" title="Ver Detalhes">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    /* --- MODAL LOGIC --- */
+    
+    function formatKey(key) {
+        // Substitui underscore por espaço e capitaliza
+        return key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    function formatValue(value) {
+        if (Array.isArray(value)) return value.join(', ');
+        if (value === true || value === 'true') return 'Sim';
+        if (value === false || value === 'false') return 'Não';
+        if (value === '' || value === null || value === undefined) return '-';
+        return value;
+    }
+
+    window.openModal = function(index) {
+        const client = clientsData[index];
+        const modal = document.getElementById('detailsModal');
+        const content = document.getElementById('modalContent');
+        
+        if (!client) return;
+
+        // Start with Base Info
+        let html = `
+            <div class="detail-row"><div class="detail-key">Código Único</div><div class="detail-value">${client.codigo_unico}</div></div>
+            <div class="detail-row"><div class="detail-key">Empresa</div><div class="detail-value">${client.nome_empresa}</div></div>
+            <div class="detail-row"><div class="detail-key">CNPJ</div><div class="detail-value">${client.cnpj}</div></div>
+            <div class="detail-row"><div class="detail-key">Data Cadastro</div><div class="detail-value">${new Date(client.created_at).toLocaleString('pt-BR')}</div></div>
+            <br><h3 style="color:var(--accent-cyan); border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px; margin-bottom:10px;">Dados Técnicos</h3>
+        `;
+
+        // Iterate over dados_tecnicos
+        const dados = client.dados_tecnicos || {};
+        for (const [key, value] of Object.entries(dados)) {
+            // Skip empty fields if desired, or show them with '-'
+            if(value && value !== "") {
+                html += `
+                    <div class="detail-row">
+                        <div class="detail-key">${formatKey(key)}</div>
+                        <div class="detail-value">${formatValue(value)}</div>
+                    </div>
+                `;
+            }
+        }
+
+        content.innerHTML = html;
+        modal.classList.remove('hidden');
+    };
+
+    window.closeModal = function() {
+        const modal = document.getElementById('detailsModal');
+        modal.classList.add('hidden');
+    };
+
+    // Close on click outside
+    document.getElementById('detailsModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // Filter Logic
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = clientsData.filter(client => 
+            client.nome_empresa.toLowerCase().includes(term)
+        );
+        renderTable(filtered);
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', fetchSurveys);
+</script>
+
+</body>
+</html>

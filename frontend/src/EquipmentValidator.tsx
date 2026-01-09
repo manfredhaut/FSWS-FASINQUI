@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { QrReader } from 'react-qr-reader';
+import QrScanner from 'react-qr-scanner';
 
 // Supondo que a função haversineDistance esteja definida em algum lugar
 // function haversineDistance(coords1, coords2) { ... }
@@ -16,18 +16,18 @@ const EquipmentValidator: React.FC<EquipmentValidatorProps> = ({ selectedEquipme
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleScan = (result: any, error: any) => {
+  const handleScan = (result: any) => {
     if (result) {
       const scannedUuid = result?.text;
       setScanResult(scannedUuid);
       validate(scannedUuid);
     }
-
-    if (error) {
-      console.error(error);
-      setError('Failed to scan QR code.');
-    }
   };
+
+  const handleError = (err: any) => {
+    console.error(err);
+    setError('Failed to scan QR code.');
+  }
 
   const validate = (scannedUuid: string) => {
     if (scannedUuid !== selectedEquipment.qrCodeUuid) {
@@ -80,10 +80,11 @@ const EquipmentValidator: React.FC<EquipmentValidatorProps> = ({ selectedEquipme
     <div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {!scanResult ? (
-        <QrReader
-          onResult={handleScan}
-          constraints={{ facingMode: 'environment' }}
-          containerStyle={{ width: '100%' }}
+        <QrScanner
+          delay={300}
+          onError={handleError}
+          onScan={handleScan}
+          style={{ width: '100%' }}
         />
       ) : (
         <p>QR Code Scanned: {scanResult}. Validating...</p>

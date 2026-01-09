@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FASINQUI - Dashboard Laboratório</title>
+    <style>
+        :root { --bg-dark: #020c1b; --glass-bg: rgba(2, 12, 27, 0.7); --glass-border: rgba(64, 123, 255, 0.1); --text-primary: #ffffff; --accent-cyan: #00d2ff; --input-bg: rgba(255, 255, 255, 0.05); --input-border: #1e3a5f; }
+        body { background: radial-gradient(circle at 50% 0%, #0b3d75 0%, #020c1b 80%); font-family: 'Segoe UI', Roboto, sans-serif; color: var(--text-primary); padding: 40px 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header-card { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 30px; margin-bottom: 30px; text-align: center; }
+        h1 { color: var(--accent-cyan); text-transform: uppercase; margin: 0 0 20px 0; }
+        
+        .equipment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .equip-card { background: rgba(2, 12, 27, 0.6); border: 1px solid rgba(64, 123, 255, 0.2); border-radius: 12px; padding: 20px; transition: transform 0.2s; }
+        .equip-card:hover { border-color: var(--accent-cyan); transform: translateY(-2px); }
+        .equip-title { font-size: 1.2rem; color: var(--accent-cyan); border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; display: flex; justify-content: space-between; }
+        
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 0.85rem; color: #a0aab5; margin-bottom: 4px; }
+        .input-group input { width: 100%; padding: 8px; background: var(--input-bg); border: 1px solid var(--input-border); color: white; border-radius: 4px; }
+        
+        .btn-save { background: linear-gradient(90deg, #00d2ff, #007aff); color: #020c1b; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 15px; }
+        .btn-save:hover { filter: brightness(1.2); }
+        select { padding: 10px; border-radius: 6px; background: var(--input-bg); color: white; border: 1px solid var(--accent-cyan); width: 100%; max-width: 400px; }
+        .status-badge { font-size: 0.8rem; padding: 2px 8px; border-radius: 10px; background: rgba(255,255,255,0.1); color: #fff; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header-card">
+        <h1>Entrada de Análises</h1>
+        <div style="margin-bottom: 15px;">
+            <label style="display:block; margin-bottom:5px; color:#a0aab5;">Selecione o Cliente:</label>
+            <select id="clienteSelect" onchange="loadDashboard()">
+                <option value="">Carregando clientes...</option>
+            </select>
+        </div>
+        <div style="display:flex; justify-content:center; gap:20px; align-items:center;">
+            <label>Data da Coleta: <input type="date" id="globalDate" style="background:rgba(255,255,255,0.1); border:1px solid #333; color:white; padding:5px; border-radius:4px;"></label>
+        </div>
+    </div>
+
+    <div id="dashboardGrid" class="equipment-grid">
+        <p style="grid-column: 1/-1; text-align: center; color: #666;">Selecione um cliente acima para visualizar os equipamentos.</p>
+    </div>
+</div>
+
+<script>
+    // --- Script Debugged & Robust ---
+    let equipamentosCache = [];
+
+    async function safeFetch(url, options = {}) {
+        try {
+            const res = await fetch(url, options);
+            
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") === -1) {
+                const responseText = await res.text();
+                console.error("==== INÍCIO DA RESPOSTA INESPERADA ====");
+                console.error(responseText);
+                console.error("==== FIM DA RESPOSTA INESPERADA ====");
+                throw new Error(`O servidor retornou uma resposta não-JSON (provavelmente HTML). Status: ${res.status}. Verifique o console para o conteúdo da resposta.`);
+            }
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || `Erro HTTP: ${res.status}`);
+            }
+            
+            return await res.json();
+        } catch (e) {
+            console.error("Fetch Error:", e);
+            throw e;
+        }
+    }
+
+    async function init() {
+        const dateInput = document.getElementById('globalDate');
+        if(dateInput) dateInput.valueAsDate = new Date();
+
+        try {
+            console.log("Tentando conectar com o Backend...");
+            const apiUrl = '/api/surveys';
+            console.log(`[DEBUG] Buscando clientes em: ${apiUrl}`);
+            const clientes = await safeFetch(apiUrl);
+            
+            const select = document.getElementById('clienteSelect');
+            select.innerHTML = '<option value="">Selecione...</option>';
+            
+            if (clientes.length === 0) {
+                select.innerHTML += '<option disabled>Nenhum cliente disponível</option>';
+            }
+            
+            clientes.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.text = c.nome_empresa;
+                select.appendChild(opt);
+            });
+        } catch(e) { 
+            document.getElementById('clienteSelect').innerHTML = '<option>Erro de Conexão</option>';
+            alert(`Falha na API:\n${e.message}\n\nDica: Verifique se o backend está rodando e se o proxy reverso está configurado corretamente.`);
+        }
+    }
+
+    async function loadDashboard() {
+        const clienteId = document.getElementById('clienteSelect').value;
+        const grid = document.getElementById('dashboardGrid');
+        
+        if (!clienteId) { grid.innerHTML = ''; return; }
+        grid.innerHTML = '<p style="text-align:center; grid-column:1/-1;">Carregando...</p>';
+
+        try {
+            const equipamentos = await safeFetch(`/api/equipments?cliente_id=${clienteId}`);
+            
+            grid.innerHTML = '';
+            if (equipamentos.length === 0) {
+                grid.innerHTML = '<p style="text-align:center; grid-column:1/-1;">Nenhum equipamento cadastrado.</p>';
+                return;
+            }
+
+            const promises = equipamentos.map(async (equip) => {
+                const params = await safeFetch(`/api/lab/params?equipamento_id=${equip.id}`);
+                return { ...equip, parametros: params };
+            });
+
+            equipamentosCache = await Promise.all(promises);
+
+            equipamentosCache.forEach((equip, index) => {
+                const card = document.createElement('div');
+                card.className = 'equip-card';
+                
+                let params = equip.parametros;
+                if (!params || params.length === 0) {
+                     params = [{parametro: 'pH', unidade: ''}, {parametro: 'Condutividade', unidade: 'uS/cm'}, {parametro: 'Sulfito', unidade: 'ppm'}];
+                }
+
+                let inputsHtml = '';
+                params.forEach(p => {
+                    inputsHtml += `
+                        <div class="input-group">
+                            <label>${p.parametro} ${p.unidade ? `(${p.unidade})` : ''}</label>
+                            <input type="number" step="0.01" name="${p.parametro}" placeholder="0.00">
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="equip-title">
+                        ${equip.nome} <span class="status-badge">${equip.tipo || 'EQP'}</span>
+                    </div>
+                    <form onsubmit="saveEquipData(event, ${index})">
+                        ${inputsHtml}
+                        <button type="submit" class="btn-save">Salvar Análise</button>
+                    </form>
+                `;
+                grid.appendChild(card);
+            });
+
+        } catch(e) { 
+            grid.innerHTML = `<p style="color:red; text-align:center;">Erro: ${e.message}</p>`;
+        }
+    }
+
+    window.saveEquipData = async (e, equipIndex) => {
+        e.preventDefault();
+        const form = e.target;
+        const equipamento = equipamentosCache[equipIndex];
+        const inputs = form.querySelectorAll('input');
+        const leituras = [];
+        
+        inputs.forEach(inp => {
+            if(inp.value) leituras.push({ parametro: inp.name, valor: parseFloat(inp.value) });
+        });
+
+        if(leituras.length === 0) { alert('Preencha ao menos um campo.'); return; }
+
+        const payload = {
+            cliente_id: parseInt(document.getElementById('clienteSelect').value),
+            equipamento_id: equipamento.id,
+            analises: leituras
+        };
+
+        const btn = form.querySelector('button');
+        btn.disabled = true;
+        btn.innerText = 'Salvando...';
+
+        try {
+            await safeFetch('/api/lab/analysis', {
+                method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)
+            });
+            alert(`✅ Dados salvos com sucesso!`);
+            form.reset();
+        } catch(err) { 
+            alert(`Erro ao salvar: ${err.message}`); 
+        }
+        
+        btn.innerText = 'Salvar Análise';
+        btn.disabled = false;
+    };
+
+    init();
+</script>
+</body>
+</html>

@@ -1,20 +1,20 @@
-# Use an official Node.js runtime as a parent image
-FROM node:20-slim
+# Imagem base leve do Node.js
+FROM node:20-alpine
 
-# Set the working directory in the container
-WORKDIR /usr/src/app
+# Cria a pasta de trabalho
+WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
+# Copia os arquivos de dependência primeiro (para aproveitar o cache)
 COPY package*.json ./
 
-# Install any needed packages
+# Instala as dependências
 RUN npm install
 
-# Bundle app source
+# Copia o resto do código fonte
 COPY . .
 
-# Make port 8080 available to the world outside this container
-EXPOSE 8080
+# Expõe a porta que o Fastify usa
+EXPOSE 3000
 
-# Define the command to run your app
-CMD [ "npm", "start" ]
+# Comando para iniciar o servidor (ajustado para aceitar conexão externa)
+CMD ["npx", "ts-node", "src/index.ts"]
