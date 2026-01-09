@@ -1,4 +1,11 @@
 import { useState, useEffect } from 'react';
+import './Home.css'; // Estilos Globais do Protótipo
+
+// Componentes da Home
+import { TopBar } from './components/TopBar';
+import { Sidebar } from './components/Sidebar';
+import { Hero } from './components/Hero';
+import { ChatFAB } from './components/ChatFAB';
 
 // Interfaces simplificadas para as "páginas"
 interface PageProps {
@@ -6,41 +13,29 @@ interface PageProps {
 }
 
 // -----------------------------------------------------------------------------
-// PÁGINA: HOME (Login / Entrada)
+// PÁGINA: HOME (Login / Entrada) - AGORA COM O NOVO VISUAL
 // -----------------------------------------------------------------------------
 function HomePage({ navigate }: PageProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <div style={styles.container}>
-      <header style={styles.header}>
-        <h1 style={styles.title}>FASINQUI</h1>
-        <p style={styles.subtitle}>Sistema de Gestão de Qualidade</p>
-      </header>
-      
-      <div style={styles.card}>
-        <h2 style={{ marginBottom: '20px', color: '#fff' }}>Acesso ao Sistema</h2>
-        
-        <button 
-          onClick={() => navigate('/admin-hub')} 
-          style={styles.buttonPrimary}
-        >
-          Entrar como Administrador
-        </button>
-        
-        <div style={{ margin: '15px 0' }}></div>
-        
-        <button 
-          onClick={() => navigate('/laboratorio')} 
-          style={styles.buttonSecondary}
-        >
-          Entrar no Laboratório
-        </button>
-      </div>
+    <div className="app-container">
+      <TopBar onMenuToggle={() => setMenuOpen(!menuOpen)} />
+      <Sidebar 
+        open={menuOpen} 
+        onClose={() => setMenuOpen(false)} 
+        onNavigate={navigate}
+      />
+      <main>
+        <Hero />
+      </main>
+      <ChatFAB />
     </div>
   );
 }
 
 // -----------------------------------------------------------------------------
-// PÁGINA: ADMIN HUB (Painel de Gestão)
+// PÁGINA: ADMIN HUB (Painel de Gestão) - Mantendo funcionalidade anterior
 // -----------------------------------------------------------------------------
 function AdminHub({ navigate }: PageProps) {
   return (
@@ -95,6 +90,7 @@ function LaboratoryRedirect() {
   );
 }
 
+
 // -----------------------------------------------------------------------------
 // COMPONENTE PRINCIPAL (Roteamento Simples)
 // -----------------------------------------------------------------------------
@@ -139,7 +135,7 @@ function App() {
 }
 
 // -----------------------------------------------------------------------------
-// ESTILOS INLINE (Para manter tudo em um arquivo só por enquanto)
+// ESTILOS INLINE (Apenas para as páginas legadas/AdminHub)
 // -----------------------------------------------------------------------------
 const styles: Record<string, React.CSSProperties> = {
   container: {
@@ -219,27 +215,16 @@ const styles: Record<string, React.CSSProperties> = {
     width: '100%',
     maxWidth: '300px',
   },
-  buttonSecondary: {
-    padding: '12px 24px',
-    background: 'transparent',
-    color: '#00d2ff',
-    border: '2px solid #00d2ff',
-    borderRadius: '8px',
-    fontSize: '1rem',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    width: '100%',
-    maxWidth: '300px',
-  },
   backButton: {
     position: 'absolute',
-    top: '20px',
+    top: '80px', // Ajustado para não colidir com a TopBar se ela existisse aqui
     left: '20px',
     background: 'transparent',
     border: 'none',
     color: '#a0aab5',
     cursor: 'pointer',
     fontSize: '1rem',
+    zIndex: 100
   }
 };
 
