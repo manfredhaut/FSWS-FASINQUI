@@ -1,0 +1,140 @@
+/*
+  ==============================================
+  REWRITE TOTAL - ARQUIVO: src/components/Admin.css
+  Correção de layout crítico por Especialista CSS/React
+  ==============================================
+*/
+
+.admin-container {
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box; /* Garante que padding não aumente a largura total */
+
+    /* --- CORREÇÃO OBRIGATÓRIA DO TOPO --- */
+    /*
+      A TopBar tem `position: fixed`, então o container precisa de um padding
+      para "empurrar" o conteúdo para baixo e evitar que fique escondido.
+      120px = 70px (altura da TopBar) + 50px (respiro de layout).
+    */
+    padding-top: 120px !important;
+    padding-left: 40px;
+    padding-right: 40px;
+    padding-bottom: 40px;
+
+    /* Animação suave de entrada */
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+}
+
+.admin-header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem; /* 32px */
+    font-weight: 700;
+    color: var(--text-white);
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-gray);
+    background-color: transparent;
+    border: 1px solid var(--border);
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.back-button:hover {
+    background-color: var(--bg-panel);
+    color: var(--text-white);
+    border-color: var(--cyan-electric);
+}
+
+/* --- CORREÇÃO DO GRID E CARDS --- */
+.toolkit-grid {
+    display: grid;
+    /*
+      MÁGICA DA RESPONSIVIDADE:
+      minmax(160px, 1fr) cria colunas flexíveis que terão no mínimo 160px
+      e crescerão para preencher o espaço disponível. `auto-fit` garante
+      que o grid se ajuste automaticamente à largura da tela.
+    */
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
+}
+
+.toolkit-card {
+    background-color: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s, border-color 0.2s;
+
+    /* --- CORREÇÃO DE ALTURA (CARDS QUADRADOS) --- */
+    height: 160px;
+    box-sizing: border-box;
+}
+
+.toolkit-card:hover {
+    transform: translateY(-5px);
+    background-color: var(--bg-panel);
+    border-color: var(--cyan-electric);
+}
+
+.toolkit-card .icon {
+    color: var(--cyan-electric);
+    margin-bottom: 15px;
+}
+
+.toolkit-card span {
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--text-gray);
+}
+
+.toolkit-card:hover span {
+    color: var(--text-white);
+}
+
+
+/* --- CORREÇÃO DE RESPONSIVIDADE PARA TABLETS/MOBILES --- */
+@media (max-width: 768px) {
+    .admin-container {
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-top: 100px !important; /* Menos padding no topo em telas menores */
+    }
+
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .admin-header h1 {
+        font-size: 1.8rem;
+    }
+}

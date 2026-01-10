@@ -21,9 +21,9 @@
 }
 
 body {
-  background-color: var(--bg-dark);
-  background-image: radial-gradient(circle at 50% 50%, rgba(0, 192, 255, 0.08) 0%, transparent 70%);
-  color: var(--text-white);
+  /* background-color: var(--bg-dark); */
+  /* background-image: radial-gradient(circle at 50% 50%, rgba(0, 192, 255, 0.08) 0%, transparent 70%); */
+  /* color: var(--text-white); */
   height: 100vh;
   overflow: hidden;
 }

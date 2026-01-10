@@ -1,0 +1,11 @@
+/* Global High-End Background */
+body {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWjAAAAHlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADeOysJAAAACnRSTlMABggPCAwWGBocHzUvEgAAAQlJREFUeNrtlAtPAjEMhCG+KCB4iAf//19yd3dBjJcT93B3c7f7tU1nJoaP+R6WdZz7PInPf4jPY3yG8f43xO0Y96M5/6k5P6j5vH/k15/151vE6S1ie4u4Pab1L603EZeJOD3F6Sn2979xP8XjFHFYxOEQcVo/2+FjHKeI82G2w38R58N8H+J+iiMhPof4OMTtEB9DfA5xH9d2OOb7EPdDXI5rOzzG9RAnQnwN8Tms7fAxxNcQZ0J8DfE1xPkw34c4H+b7EOfDfB/ifJjvQ5wP832I82G+D3E+zPchzof5PsT5MN+HOB/m+xDnw3wf4nyY70OcD/N9iPNhvg9xPsz3Ic6H+T7E+TDfh/gZ/gX2S2uL+6EAAAAASUVORK5CYII='), linear-gradient(90deg, #020c2b 0%, #0b508c 100%);
+    background-blend-mode: soft-light;
+    background-attachment: fixed;
+    background-repeat: repeat;
+    margin: 0;
+    min-height: 100vh;
+    width: 100%;
+    color: white; /* Garante texto legível no fundo escuro */
+}

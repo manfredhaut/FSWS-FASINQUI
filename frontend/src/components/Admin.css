@@ -1,0 +1,169 @@
+/* ARQUIVO: frontend/src/components/Admin.css */
+
+.admin-container {
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+
+    /* --- CORREÇÃO DO TÍTULO CORTADO --- */
+    /* Adicionamos 110px no topo. 
+       68px (Altura da TopBar) + 42px (Respiro extra) = 110px 
+    */
+    padding-top: 110px; 
+    padding-bottom: 40px;
+    padding-left: 40px;
+    padding-right: 40px;
+
+    /* Fundo High-Tech V7 (Mantendo a identidade visual aprovada) */
+    background: transparent;
+    color: #f8fafc;
+    font-family: 'Inter', sans-serif;
+    
+    /* Animação suave de entrada */
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* Header (Título e Botão Voltar) */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto 30px auto; /* Centraliza na tela */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 15px;
+}
+
+.admin-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #FFFFFF; /* Branco para destaque, ou use var(--cyan-electric) */
+    text-shadow: 0 0 10px rgba(0, 192, 255, 0.3);
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.back-button:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-color: #00C0FF;
+}
+
+/* --- GRID E CARDS (CORREÇÃO DE TAMANHO) --- */
+.toolkit-grid {
+    display: grid;
+    /* MÁGICA DA PROPORÇÃO:
+       Mudamos de 220px para 180px. 
+       Isso força os cards a serem menores e caberem mais na tela.
+    */
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+    max-width: 1200px; /* Limita a largura total para não espalhar demais */
+    margin: 0 auto;    /* Centraliza o grid */
+}
+
+.toolkit-card {
+    background-color: rgba(15, 22, 35, 0.6); /* Fundo escuro translúcido */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    
+    /* Tamanho fixo relativo para garantir quadradinhos perfeitos */
+    aspect-ratio: 1 / 0.85; /* Levemente retangular horizontal */
+    padding: 20px 15px;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    backdrop-filter: blur(4px);
+}
+
+.toolkit-card:hover {
+    transform: translateY(-5px);
+    background-color: rgba(30, 41, 59, 0.8);
+    border-color: #00C0FF; /* Borda Ciano ao passar o mouse */
+    box-shadow: 0 8px 20px -6px rgba(0, 192, 255, 0.2);
+}
+
+.toolkit-card .icon {
+    color: #00C0FF;
+    margin-bottom: 12px;
+    transition: transform 0.3s;
+    /* Trava o tamanho do ícone */
+    width: 42px;
+    height: 42px;
+}
+
+.toolkit-card:hover .icon {
+    transform: scale(1.15);
+    color: #00FF9D; /* Ícone fica verde neon */
+}
+
+.toolkit-card span {
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.3;
+    color: #cbd5e1;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- RESPONSIVIDADE (MOBILE) --- */
+@media (max-width: 768px) {
+    .admin-container {
+        /* No celular, a barra pode ser menor ou o padding precisa ser ajustado */
+        padding-top: 90px; 
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .admin-header {
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .admin-header h1 {
+        font-size: 20px; /* Título menor */
+    }
+
+    .toolkit-grid {
+        /* Cards ainda menores no celular para caber 2 por linha */
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 12px;
+    }
+
+    .toolkit-card {
+        padding: 15px 10px;
+        aspect-ratio: 1 / 1; /* Quadrado perfeito no mobile */
+    }
+
+    .toolkit-card .icon {
+        width: 32px;
+        height: 32px;
+        margin-bottom: 8px;
+    }
+
+    .toolkit-card span {
+        font-size: 0.8rem;
+    }
+}

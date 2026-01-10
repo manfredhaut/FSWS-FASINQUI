@@ -4,23 +4,25 @@ import { IconClose } from './Icons';
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
-  onNavigate: (path: string) => void;
+  // A função onNavigate agora recebe a view para qual navegar
+  onNavigate: (view: 'home' | 'admin') => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, onNavigate }) => {
   const links = [
-    { label: "Home", path: "/" },
-    { label: "Gestão Administr.", path: "/admin-hub" },
-    { label: "Laboratório (Entrada)", path: "/laboratorio" },
-    { label: "Operacional (Campo)", path: "#" },
-    { label: "Inteligência IA", path: "#" },
-    { label: "Commercial (Surveys)", path: "#" },
-    { label: "Importar Planilhas", path: "#" },
-    { label: "Infraestrutura", path: "#" }
+    { label: "Home", view: 'home' },
+    { label: "Gestão Administr.", view: 'admin' },
+    // Outros links podem ser adicionados aqui no futuro
+    { label: "Laboratório (Entrada)", view: 'home' }, // Exemplo
+    { label: "Operacional (Campo)", view: 'home' },
+    { label: "Inteligência IA", view: 'home' },
+    { label: "Commercial (Surveys)", view: 'home' }, 
+    { label: "Importar Planilhas", view: 'home' },
+    { label: "Infraestrutura", view: 'home' }
   ];
 
-  const handleNavigation = (path: string) => {
-    onNavigate(path);
+  const handleNavigation = (view: 'home' | 'admin') => {
+    onNavigate(view);
     onClose();
   };
 
@@ -37,10 +39,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, onNavigate }) =
             <a 
               href="#" 
               key={i} 
-              className={`nav-item ${i === 0 ? 'active' : ''}`}
+              // A classe 'active' pode ser gerenciada com base na view atual se necessário
+              className={`nav-item ${link.view === 'home' && i === 0 ? 'active' : ''}`}
               onClick={(e) => {
                 e.preventDefault();
-                handleNavigation(link.path);
+                handleNavigation(link.view as 'home' | 'admin');
               }}
             >
               {link.label}
