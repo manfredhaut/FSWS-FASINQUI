@@ -169,13 +169,34 @@ body {
 
 /* ===== HERO SECTION ===== */
 .hero {
-  height: 100vh;
+  /* LAYOUT FLUIDO */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  
+  /* ALINHAMENTO SEGURO */
+  /* Mudamos de 'center' para 'flex-start' com padding para evitar corte no topo */
+  justify-content: center; 
   align-items: center;
   text-align: center;
-  padding: 0 24px;
+  
+  /* DIMENSÕES - O SEGREDO DO FIX */
+  width: 100%;
+  height: auto !important; /* Remove qualquer teto fixo de altura */
+  min-height: 100vh !important; /* Garante que cubra a tela, mas permite crescer */
+
+  /* ESPAÇAMENTO DE SEGURANÇA */
+  /* 140px em cima garante que o logo nunca seja cortado pela barra de navegação/topo */
+  padding-top: 140px !important;
+  padding-bottom: 80px !important;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  /* PREVENÇÃO DE CORTE */
+  overflow: visible !important;
+  box-sizing: border-box;
+
+  /* FUNDO (Mantém o global ou define aqui se necessário) */
+  background: transparent;
   position: relative;
   z-index: 1;
 }
