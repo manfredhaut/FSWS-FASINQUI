@@ -1,0 +1,92 @@
+/* --- CSS BLINDADO PARA ROLAGEM INDEPENDENTE --- */
+.client-register-wrapper { 
+    /* POSICIONAMENTO FIXO: Tira do fluxo normal e cobre a tela */
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100vh; 
+    /* Ocupa 100% da altura da janela */
+
+    /* ROLAGEM FORÇADA: Cria uma barra de rolagem exclusiva para este elemento */
+    overflow-y: auto !important; 
+    overflow-x: hidden;
+
+    /* Visual e Camadas */
+    background: transparent !important; /* Mantém o fundo azul do app visível */
+    z-index: 9999; /* Garante que fique acima de qualquer menu ou sidebar travado */
+
+    /* Garante que o scroll seja suave */ 
+    scroll-behavior: smooth;
+}
+
+.client-register-container { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    /* Padding generoso para garantir que o final do formulário não seja cortado */ 
+    padding-top: 120px; 
+    padding-bottom: 150px; 
+    padding-left: 20px; 
+    padding-right: 20px; 
+}
+
+/* --- ESTILOS VISUAIS DO FORMULÁRIO (MANTIDOS) --- */
+
+/* Header */ 
+.register-header { text-align: center; margin-bottom: 30px; position: relative; } 
+.back-button-wrapper { position: absolute; left: 0; top: 50%; transform: translateY(-50%); }
+
+.back-button-reg { background: rgba(0,0,0,0.3); border: 1px solid rgba(64, 123, 255, 0.3); color: #fff; padding: 8px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; } 
+.back-button-reg:hover { background: rgba(64, 123, 255, 0.2); border-color: #00d2ff; }
+
+.register-header h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; background: linear-gradient(90deg, #fff, #a3d9ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; } 
+.register-header .subtitle { color: #00d2ff; font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+
+/* Card de Vidro */ 
+.glass-card { background: rgba(2, 12, 27, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(64, 123, 255, 0.1); border-radius: 16px; padding: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+
+/* Sections */ 
+.form-section { margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 30px; } 
+.form-section:last-child { border-bottom: none; } 
+.section-header { display: flex; align-items: center; margin-bottom: 25px; } 
+.section-header h2 { font-size: 1.2rem; color: #00d2ff; text-transform: uppercase; letter-spacing: 1px; margin: 0; padding-right: 15px; } 
+.section-line { flex-grow: 1; height: 1px; background: linear-gradient(90deg, #00d2ff 0%, transparent 100%); opacity: 0.5; }
+
+/* Grids */ 
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } 
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; } 
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+/* Inputs */ 
+.form-group { margin-bottom: 20px; } 
+.form-group label { display: block; font-size: 0.85rem; color: #a0aab5; margin-bottom: 8px; font-weight: 500; }
+
+.client-register-wrapper input, .client-register-wrapper select, .client-register-wrapper textarea { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid #1e3a5f; color: white; padding: 12px 15px; border-radius: 6px; font-size: 0.95rem; font-family: inherit; } 
+.client-register-wrapper textarea { min-height: 100px; resize: vertical; } 
+.input-wrapper { position: relative; } 
+.input-wrapper span { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #a0aab5; font-size: 0.85rem; pointer-events: none; }
+
+/* Checkboxes & Radios */ 
+.options-group { display: flex; gap: 15px; flex-wrap: wrap; padding-top: 5px; } 
+.custom-check { display: flex; align-items: center; cursor: pointer; font-size: 0.9rem; color: #fff; } 
+.custom-check input { appearance: none; width: 18px; height: 18px; border: 2px solid #a0aab5; border-radius: 4px; margin-right: 8px; background: transparent; cursor: pointer; display: grid; place-content: center; } 
+.custom-check input[type="radio"] { border-radius: 50%; } 
+.custom-check input::before { content: ""; width: 10px; height: 10px; transform: scale(0); transition: 120ms transform ease-in-out; box-shadow: inset 1em 1em #00d2ff; } 
+.custom-check input[type="checkbox"]::before { transform-origin: bottom left; clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%); } 
+.custom-check input[type="radio"]::before { border-radius: 50%; } 
+.custom-check input:checked::before { transform: scale(1); } 
+.custom-check input:checked { border-color: #00d2ff; }
+
+/* Buttons */ 
+.actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 40px; } 
+.btn { padding: 12px 30px; border-radius: 6px; font-weight: 600; cursor: pointer; text-transform: uppercase; border: none; } 
+.btn-primary { background: linear-gradient(135deg, #0066cc 0%, #003366 100%); color: white; } 
+.btn-secondary { background: transparent; border: 1px solid #1e3a5f; color: #a0aab5; }
+
+/* Toolkit Selector */ 
+.toolkit-selector { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 20px; margin-bottom: 40px; text-align: center; border: 1px dashed rgba(64,123,255,0.1); } 
+.toolkit-buttons { display: flex; gap: 20px; justify-content: center; } 
+.type-btn { background: transparent; border: 2px solid #1e3a5f; color: #a0aab5; padding: 15px 30px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; max-width: 300px; text-transform: uppercase; } 
+.type-btn.active { background: #00d2ff; border-color: #00d2ff; color: #020c1b; }
+
+@media (max-width: 768px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } .actions, .toolkit-buttons { flex-direction: column; } .back-button-wrapper { position: static; margin-bottom: 20px; } }

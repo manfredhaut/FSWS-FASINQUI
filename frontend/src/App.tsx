@@ -9,9 +9,10 @@ import { ChatFAB } from './components/ChatFAB';
 // Visualizações (Páginas)
 import { Hero } from './components/Hero';
 import { AdminDashboard } from './components/AdminDashboard';
+import { ClientRegister } from './components/ClientRegister'; // Nova importação
 
 // Definindo os tipos para as visualizações possíveis
-type View = 'home' | 'admin';
+type View = 'home' | 'admin' | 'client-register';
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -26,7 +27,10 @@ function App() {
   const renderMainContent = () => {
     switch (currentView) {
       case 'admin':
-        return <AdminDashboard onBack={() => navigate('home')} />;
+        // Agora passamos a função de navegação para o AdminDashboard também
+        return <AdminDashboard onBack={() => navigate('home')} onNavigate={navigate} />;
+      case 'client-register':
+        return <ClientRegister onBack={() => navigate('admin')} />;
       case 'home':
       default:
         return <Hero />;
@@ -39,7 +43,7 @@ function App() {
       <Sidebar 
         open={menuOpen} 
         onClose={() => setMenuOpen(false)} 
-        onNavigate={navigate}
+        onNavigate={navigate} // O Sidebar também pode navegar para lá se configurado
       />
       <main>
         {renderMainContent()}
